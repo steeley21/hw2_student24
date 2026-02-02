@@ -66,11 +66,52 @@ int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **h
 }
 
 //---------------------------------------------------------------------------
+static double pointToSegmentDistance( double px, double py, double ax, double ay, double bx, double by){
+    double abx = bx - ax;
+    double aby = by - ay;
+    double apx = px - ax;
+    double apy = py - ay;
+
+    double abLen2 = abx * abx + aby * aby;
+    if(abLen2 == 0.0) {
+        // A and B are the same point
+        double dx = px - ax;
+        double dy = py - ay;
+        return sqrt(dx * dx + dy * dy);
+    }
+
+    double t = (apx * abx + apy * aby) / abLen2;
+    if(t < 0.0) t = 0.0;
+    else if(t > 1.0) t = 1.0;
+
+    double cx = ax + t * abx;
+    double cy = ay + t * aby;
+    double dx = px - cx;
+    double dy = py - cy;
+    return sqrt(dx * dx + dy * dy);
+}
 
 int pgmDrawLine( int **pixels, int numRows, int numCols, char **header,
                 int p1row, int p1col, int p2row, int p2col )
 {
+    (void)header;
 
+    double ax = (double)p1col, ay = (double)p1row;
+    double bx = (double)p2col, by = (double)p2row;
+
+    for(int r = 0; r < numRows; r++) {
+        for(int c =0; c < numCols; c++) {
+            double px = (double)c;
+            double py = (double)r;
+
+            double d = pointToSegmentDistance(px, py, ax, ay, bx, by);
+
+            if(d <= 0.5) {
+                pixels[r][c] = 0;
+            }
+        }
+    }
+    return 0;
 }
 
 //----------------------------------------------------------------------------
