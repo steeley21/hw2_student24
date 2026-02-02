@@ -58,10 +58,21 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow, int ce
 //---------------------------------------------------------------------------
 int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **header )
 {
-    drawEdgeKernel<<<1,1>>>(pixels, numRows, numCols, edgeWidth);
-    cudaDeviceSynchronize();
-    return 0;
+    int *d_pixels;
+    int size = numRows * numCols * sizeof(int);
 
+    cudaMalloc((void**)&d_pixels, size); // Allocate device memory
+    cudaMemcpy(d_pixels, pixels, size, cudaMemcpyHostToDevice); // Copy pixels to device
+
+    dim3 block(16, 16); // Define block size
+    dim3 grid((numCols + block.x - 1) / block.x, (numRows + block.y - 1) / block.y); // Define grid size
+
+    pgmDrawEdgeKernel<<<grid, block>>>(d_pixels, numRows, numCols, edgeWidth); // Launch kernel
+    cudaDeviceSynchronize(); // Wait for GPU to finish
+
+    cudaMemcpy(pixels, d_pixels, size, cudaMemcpyDeviceToHost); // Copy result back to host
+    cudaFree(d_pixels); // Free device memory
+    return 0;
 }
 
 //---------------------------------------------------------------------------
