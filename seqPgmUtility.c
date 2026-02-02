@@ -72,7 +72,7 @@ static double pointToSegmentDistance( double px, double py, double ax, double ay
     double apx = px - ax;
     double apy = py - ay;
 
-    double abLen2 = abx * abx * + aby * aby;
+    double abLen2 = abx * abx + aby * aby;
     if(abLen2 == 0.0) {
         // A and B are the same point
         double dx = px - ax;
