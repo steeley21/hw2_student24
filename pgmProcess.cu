@@ -11,5 +11,55 @@
  */
 __device__ float distance( int p1[], int p2[] )
 {
+    return sqrtf( (float)( (p1[0]-p2[0])*(p1[0]-p2[0]) + (p1[1]-p2[1])*(p1[1]-p2[1]) ) );
+
+}
+
+drawCircleKernel<<<1,1>>>(pixels, numRows, numCols, centerRow, centerCol, radius) {
+
+    int row = threadIdx.y + blockIdx.y * blockDim.y;
+    int col = threadIdx.x + blockIdx.x * blockDim.x;
+
+    if (row < numRows && col < numCols) {
+        int p[2] = {row, col};
+        int center[2] = {centerRow, centerCol};
+        float dist = distance(p, center);
+        if (fabs(dist - radius) <= 0.5) {
+            pixels[row][col] = 255; // Set pixel to white if it's on the circle
+        }
+    }
+
+}
+
+drawEdgeKernel<<<1,1>>>(pixels, numRows, numCols, edgeWidth) {
+
+    int row = threadIdx.y + blockIdx.y * blockDim.y;
+    int col = threadIdx.x + blockIdx.x * blockDim.x;
+
+    if (row < numRows && col < numCols) {
+        if (row < edgeWidth || row >= numRows - edgeWidth || col < edgeWidth || col >= numCols - edgeWidth) {
+            pixels[row][col] = 255; // Set pixel to white if it's within the edge width
+        }
+    }
+
+}
+
+drawLineKernel<<<1,1>>>(pixels, numRows, numCols, p1row, p1col, p2row, p2col) {
+
+    int row = threadIdx.y + blockIdx.y * blockDim.y;
+    int col = threadIdx.x + blockIdx.x * blockDim.x;
+
+    if (row < numRows && col < numCols) {
+        // Calculate line equation parameters
+        float A = (float)(p2row - p1row);
+        float B = (float)(p1col - p2col);
+        float C = (float)(p2col * p1row - p1col * p2row);
+
+        // Calculate distance from point to line
+        float dist = fabs(A * row + B * col + C) / sqrtf(A * A + B * B);
+        if (dist <= 0.5) {
+            pixels[row][col] = 255; // Set pixel to white if it's on the line
+        }
+    }
 
 }
