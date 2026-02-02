@@ -66,12 +66,31 @@ int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **h
 
 //---------------------------------------------------------------------------
 
-int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1row, int p1col, int p2row, int p2col ) {
-    
-    drawLineKernel<<<grid,block>>>(pixels, numRows, numCols, p1row, p1col, p2row, p2col);
-    cudaDeviceSynchronize();
-    return 0;
+int pgmDrawLine(int* pixels, int numRows, int numCols, char** header,
+                int p1row, int p1col, int p2row, int p2col) {
+    int total = numRows * numCols;
+    size_t bytes = sizeof(int) * (size_t)total;
 
+    int* d_pixels = nullptr;
+    dieCuda(cudaMalloc((void**)&d_pixels, bytes), "cudaMalloc d_pixels">
+    dieCuda(cudaMemcpy(d_pixels, pixels, bytes, cudaMemcpyHostToDevice)>
+
+    int block = 256;
+    int grid = (total + block - 1) / block;
+    lineKernel<<<grid, block>>>(d_pixels, numRows, numCols, p1row, p1co>
+    dieCuda(cudaGetLastError(), "launch lineKernel");
+    dieCuda(cudaDeviceSynchronize(), "sync lineKernel");
+
+    dieCuda(cudaMemcpy(pixels, d_pixels, bytes, cudaMemcpyDeviceToHost)>
+    cudaFree(d_pixels);
+
+    int oldMax = parseMaxFromHeader(header);
+    int newMax = computeMaxCPU(pixels, total);
+    if (newMax != oldMax) {
+        writeMaxToHeader(header, newMax);
+        return 1;
+    }
+    return 0;
 }
 
 //----------------------------------------------------------------------------
