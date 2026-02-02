@@ -2,19 +2,63 @@
 #include <stdlib.h>
 #include "pgmUtility.h"
 
-int main() {
+int main(int argc, char *argv[]) {
 
-    char[] flag = argv[1];
-    switch (flag) {
-        case "-c":
-            pgmDrawCircle(pixels, numRows, numCols, centerRow, centerCol, radius, header);
+    if (argc < 2) {
+        printf("Usage: %s -c|-e|-l [additional parameters]\n", argv[0]);
+        return -1;
+    }
+
+    char *flag = argv[1];
+    switch (flag[1]) {  // flag[1] is the character after the dash
+        case 'c':
+
+            if (argc != 7) {
+                printf("Usage for circle: %s -c centerRow centerCol radius inputFile\n", argv[0]);
+                return -1;
+            }
+
+            int circleCenterRow = atoi(argv[2]);
+            int circleCenterCol = atoi(argv[3]);
+            int radius = atoi(argv[4]);
+            char oldImageFile[256] = argv[5];
+            char newImageFile[256] = argv[6];
+            
+
+            pgmDrawCircle(pixels, numRows, numCols, circleCenterRow, circleCenterCol, radius, header);
             break;
-        case "edge":
+
+        case 'e':
+
+            if (argc != 5) {
+                printf("Usage for edge: %s -e edgeWidth inputFile\n", argv[0]);
+                return -1;
+            }
+
+            int edgeWidth = atoi(argv[2]);
+            char oldImageFile[256] = argv[3];
+            char newImageFile[256] = argv[4];
+
             pgmDrawEdge(pixels, numRows, numCols, edgeWidth, header);
             break;
-        case "line":
+
+        case 'l':
+
+            if (argc != 8) {
+                printf("Usage for line: %s -l p1row p1col p2row p2col inputFile\n", argv[0]);
+                return -1;
+            }
+
+            int p1row = atoi(argv[2]);
+            int p1col = atoi(argv[3]);
+            int p2row = atoi(argv[4]);
+            int p2col = atoi(argv[5]);
+            char oldImageFile[256] = argv[6];
+            char newImageFile[256] = argv[7];
+
             pgmDrawLine(pixels, numRows, numCols, header, p1row, p1col, p2row, p2col);
             break;
+
     }
 
     dim3 grid, block;
