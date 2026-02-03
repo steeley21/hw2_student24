@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "pgmUtility.h"
 
+#define ERROR_MESSAGE "Usage:\n-e edgeWidth  oldImageFile  newImageFile\n-c circleCenterRow circleCenterCol radius  oldImageFile  newImageFile\n-l p1row p1col p2row p2col oldImageFile newImageFile\n"
+
 int main(int argc, char *argv[]) {
 
     if (argc < 2) {
@@ -18,7 +20,7 @@ int main(int argc, char *argv[]) {
         case 'c':
 
             if (argc != 7) {
-                printf("Usage for circle: %s -c centerRow centerCol radius inputFile\n", argv[0]);
+                printf("%s", ERROR_MESSAGE);
                 return -1;
             }
 
@@ -52,7 +54,7 @@ int main(int argc, char *argv[]) {
         case 'e':
 
             if (argc != 5) {
-                printf("Usage for edge: %s -e edgeWidth inputFile\n", argv[0]);
+                printf("%s", ERROR_MESSAGE);
                 return -1;
             }
 
@@ -83,7 +85,7 @@ int main(int argc, char *argv[]) {
         case 'l':
 
             if (argc != 8) {
-                printf("Usage for line: %s -l p1row p1col p2row p2col inputFile\n", argv[0]);
+                printf("%s", ERROR_MESSAGE);
                 return -1;
             }
 
@@ -115,7 +117,7 @@ int main(int argc, char *argv[]) {
             break;
 
         default:
-            printf("Unknown flag: %s\n", flag);
+            printf(ERROR_MESSAGE);
             return -1;
         }
 
