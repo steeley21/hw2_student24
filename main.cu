@@ -114,21 +114,18 @@ int main(int argc, char *argv[]) {
             fileClose(fileOutput);
             break;
 
+        default:
+            printf("Unknown flag: %s\n", flag);
+            return -1;
+        }
+
     }
 
-    dim3 grid, block;
-    block.x = 16;
-    block.y = 16;
-    grid.x = ceil((double)(numCols + block.x - 1) / block.x);
-    grid.y = ceil((double)(numRows + block.y - 1) / block.y);
-
-    drawCircleKernel<<<grid,block>>>(pixels, numRows, numCols, centerRow, centerCol, radius);
-
-
-    drawEdgeKernel<<<grid,block>>>(pixels, numRows, numCols, edgeWidth);
-
-    drawLineKernel<<<grid,block>>>(pixels, numRows, numCols, p1row, p1col, p2row, p2col);
-
+    // dim3 grid, block;
+    // block.x = 16;
+    // block.y = 16;
+    // grid.x = ceil((double)(numCols + block.x - 1) / block.x);
+    // grid.y = ceil((double)(numRows + block.y - 1) / block.y);
 
     return 0;
 }
