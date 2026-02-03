@@ -12,7 +12,7 @@
 #include "pgmUtility.h"
 
 //---------------------------------------------------------------------------
-int ** pgmRead( char **header, int *numRows, int *numCols, FILE *in )
+int ** seqPgmRead( char **header, int *numRows, int *numCols, FILE *in )
 {
     int i, j;
     
@@ -53,20 +53,17 @@ int ** pgmRead( char **header, int *numRows, int *numCols, FILE *in )
 
 //---------------------------------------------------------------------------
 //
-int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
-                  int centerCol, int radius, char **header )
-{
+int seqPgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow, int centerCol, int radius, char **header ) {
 
 }
 
 //---------------------------------------------------------------------------
-int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **header )
-{
+int seqPgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **header ) {
 
 }
 
 //---------------------------------------------------------------------------
-static double pointToSegmentDistance( double px, double py, double ax, double ay, double bx, double by){
+static double pointToSegmentDistance( double px, double py, double ax, double ay, double bx, double by) {
     double abx = bx - ax;
     double aby = by - ay;
     double apx = px - ax;
@@ -91,9 +88,7 @@ static double pointToSegmentDistance( double px, double py, double ax, double ay
     return sqrt(dx * dx + dy * dy);
 }
 
-int pgmDrawLine( int **pixels, int numRows, int numCols, char **header,
-                int p1row, int p1col, int p2row, int p2col )
-{
+int seqPgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1row, int p1col, int p2row, int p2col ) {
     (void)header;
 
     double ax = (double)p1col, ay = (double)p1row;
@@ -115,8 +110,7 @@ int pgmDrawLine( int **pixels, int numRows, int numCols, char **header,
 }
 
 //----------------------------------------------------------------------------
-int pgmWrite( const char **header, const int **pixels, int numRows, int numCols, FILE *out )
-{
+int seqPgmWrite( const char **header, const int **pixels, int numRows, int numCols, FILE *out ) {
     int i, j;
     
     // write the header
@@ -140,7 +134,7 @@ int pgmWrite( const char **header, const int **pixels, int numRows, int numCols,
 }
 
 //-------------------------------------------------------------------------------
-double distance( int p1[], int p2[] )
+double seqDistance( int p1[], int p2[] )
 {
     return sqrt( pow( p1[0] - p2[0], 2 ) + pow( p1[1] - p2[1], 2 ) );
 }
