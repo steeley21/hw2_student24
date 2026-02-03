@@ -46,35 +46,36 @@ int * pgmRead( char **header, int *numRows, int *numCols, FILE *in ) {
     return pixels;
 }
 
-//---------------------------------------------------------------------------
-//
 int pgmDrawCircle( int *pixels, int numRows, int numCols, int centerRow, int centerCol, int radius, char **header ) {
 
     int *device_pixels;
-    int size = numRows * numCols * sizeof(int);
+    int byteSize = numRows * numCols * sizeof(int);
 
-    cudaMalloc((void**)&device_pixels, size); // Allocate device memory
-    cudaMemcpy(device_pixels, pixels, size, cudaMemcpyHostToDevice); // Copy pixels 
+    // Allocate device memory
+    cudaMalloc((void**)&device_pixels, byteSize); 
+    cudaMemcpy(device_pixels, pixels, byteSize, cudaMemcpyHostToDevice);
+    //Calculate Parameters
     dim3 block(16, 16); // Define block size
-    dim3 grid((numCols + block.x - 1) / block.x, (numRows + block.y - 1) / block.y); // Define grid size
+    dim3 grid((numCols + block.x - 1) / block.x, (numRows + block.y - 1) / block.y);
 
+    //Launch Kernel
     drawCircleKernel<<<grid, block>>>(device_pixels, numRows, numCols, centerRow, centerCol, radius);
 
-    cudaMemcpy(pixels, device_pixels, size, cudaMemcpyDeviceToHost); // Copy result back to host
-    cudaFree(device_pixels); // Free device memory
+    // Copy result back to host and free device memory
+    cudaMemcpy(pixels, device_pixels, size, cudaMemcpyDeviceToHost); 
+    cudaFree(device_pixels);
 
     return 0;
 }
 
-//---------------------------------------------------------------------------
 int pgmDrawEdge(int *pixels, int numRows, int numCols, int edgeWidth, char **header)
 {
     int *device_pixels;
-    int size = numRows * numCols * sizeof(int);
+    int byteSize = numRows * numCols * sizeof(int);
 
     // Allocate device memory
-    cudaMalloc((void**)&device_pixels, size);
-    cudaMemcpy(device_pixels, pixels, size, cudaMemcpyHostToDevice);
+    cudaMalloc((void**)&device_pixels, byteSize);
+    cudaMemcpy(device_pixels, pixels, byteSize, cudaMemcpyHostToDevice);
     
     //Calculate Parameters
     dim3 block(16, 16); 
@@ -90,9 +91,11 @@ int pgmDrawEdge(int *pixels, int numRows, int numCols, int edgeWidth, char **hea
     return 0;
 }
 
-//---------------------------------------------------------------------------
-
+/*
+/ pgmDrawLine NEEDS WORK: Everything
+*/
 int pgmDrawLine(int* pixels, int numRows, int numCols, char** header, int p1row, int p1col, int p2row, int p2col) {
+
     int total = numRows * numCols;
     size_t bytes = sizeof(int) * (size_t)total;
 
@@ -117,8 +120,7 @@ int pgmDrawLine(int* pixels, int numRows, int numCols, char** header, int p1row,
     return 0;
 }
 
-//----------------------------------------------------------------------------
-int pgmWrite( const char **header, const int *pixels, int numRows, int numCols, FILE *out )
+int pgmWrite( const char **header, const int *pixels, int numRows, int numCols, FILE *out ) 
 {
     int i, j;
     
@@ -138,10 +140,5 @@ int pgmWrite( const char **header, const int *pixels, int numRows, int numCols, 
         }
     }
     return 0;
-}
 
-//-------------------------------------------------------------------------------
-double distance( int p1[], int p2[] )
-{
-    return sqrt(pow(p1[0] - p2[0], 2) + pow(p1[1] - p2[1], 2));
 }
