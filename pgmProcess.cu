@@ -9,13 +9,11 @@
  *  @param[in]  p2  coordinates of pixel two, p2[0] is for row number, p2[1] is for column number
  *  @return         return distance between p1 and p2
  */
-__device__ float distance( int p1[], int p2[] )
-{
+__device__ float distance(int p1[], int p2[]) {
     return sqrtf( (float)( (p1[0]-p2[0])*(p1[0]-p2[0]) + (p1[1]-p2[1])*(p1[1]-p2[1]) ) );
-
 }
 
-drawCircleKernel<<<1,1>>>(pixels, numRows, numCols, centerRow, centerCol, radius) {
+__global__ void drawCircleKernel(int *pixels, int numRows, int numCols, int centerRow, int centerCol, int radius) {
 
     int row = threadIdx.y + blockIdx.y * blockDim.y;
     int col = threadIdx.x + blockIdx.x * blockDim.x;
@@ -31,7 +29,7 @@ drawCircleKernel<<<1,1>>>(pixels, numRows, numCols, centerRow, centerCol, radius
 
 }
 
-drawEdgeKernel<<<1,1>>>(pixels, numRows, numCols, edgeWidth) {
+__global__ void drawEdgeKernel(int *pixels, int numRows, int numCols, int edgeWidth) {
 
     int row = threadIdx.y + blockIdx.y * blockDim.y;
     int col = threadIdx.x + blockIdx.x * blockDim.x;
@@ -44,7 +42,7 @@ drawEdgeKernel<<<1,1>>>(pixels, numRows, numCols, edgeWidth) {
 
 }
 
-drawLineKernel<<<1,1>>>(pixels, numRows, numCols, p1row, p1col, p2row, p2col) {
+__global__ void drawLineKernel(int *pixels, int numRows, int numCols, int p1row, int p1col, int p2row, int p2col) {
 
     int row = threadIdx.y + blockIdx.y * blockDim.y;
     int col = threadIdx.x + blockIdx.x * blockDim.x;

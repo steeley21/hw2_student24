@@ -119,16 +119,8 @@ int main(int argc, char *argv[]) {
             return -1;
         }
 
+        return 0;
     }
-
-    // dim3 grid, block;
-    // block.x = 16;
-    // block.y = 16;
-    // grid.x = ceil((double)(numCols + block.x - 1) / block.x);
-    // grid.y = ceil((double)(numRows + block.y - 1) / block.y);
-
-    return 0;
-}
 
 *fileptr fileOpen(const char *filename, const char *mode) {
     fileptr fp = fopen(filename, mode);
