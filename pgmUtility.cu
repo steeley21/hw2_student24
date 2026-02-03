@@ -100,21 +100,17 @@ int pgmDrawLine(int* pixels, int numRows, int numCols, char** header, int p1row,
     int *device_pixels;
     int byteSize = numRows * numCols * sizeof(int);
 
-    // Allocate device memory
-    cudaMalloc((void**)&device_pixels, byteSize);
-    cudaMemcpy(device_pixels, pixels, byteSize, cudaMemcpyHostToDevice);
+    int* device_pixels = nullptr;
+    dieCuda(cudaMalloc((void**)&device_pixels, bytes), "cudaMalloc device_pixels");
+    dieCuda(cudaMemcpy(device_pixels, pixels, bytes, cudaMemcpyHostToDevice), "cudaMemcpy device_pixels");
+    int block = 256;
+    int grid = (total + block - 1) / block;
+    lineKernel<<<grid, block>>>(device_pixels, numRows, numCols, p1row, p1col, p2row, p2col);
+    dieCuda(cudaGetLastError(), "launch lineKernel");
+    dieCuda(cudaDeviceSynchronize(), "sync lineKernel");
 
-    //Calculate Parameters
-    dim3 block(16, 16); 
-    dim3 grid((numCols + block.x - 1) / block.x, (numRows + block.y - 1) / block.y); 
-
-    //Launch Kernel
-    pgmDrawEdgeKernel<<<grid, block>>>(device_pixels, numRows, numCols, edgeWidth); 
-    cudaDeviceSynchronize();
-
-    //Copy result back to host and free device memory
-    cudaMemcpy(pixels, device_pixels, size, cudaMemcpyDeviceToHost);
-    cudaFree(device_pixels); 
+    dieCuda(cudaMemcpy(pixels, device_pixels, bytes, cudaMemcpyDeviceToHost), "cudaMemcpy pixels");
+    cudaFree(device_pixels);
 
     return 0;
 }
