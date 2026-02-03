@@ -63,7 +63,7 @@ int pgmDrawCircle( int *pixels, int numRows, int numCols, int centerRow, int cen
     drawCircleKernel<<<grid, block>>>(device_pixels, numRows, numCols, centerRow, centerCol, radius);
 
     // Copy result back to host and free device memory
-    cudaMemcpy(pixels, device_pixels, size, cudaMemcpyDeviceToHost); 
+    cudaMemcpy(pixels, device_pixels, byteSize, cudaMemcpyDeviceToHost); 
     cudaFree(device_pixels);
 
     return 0;
@@ -87,7 +87,7 @@ int pgmDrawEdge(int *pixels, int numRows, int numCols, int edgeWidth, char **hea
     cudaDeviceSynchronize();
 
     //Copy result back to host and free device memory
-    cudaMemcpy(pixels, device_pixels, size, cudaMemcpyDeviceToHost);
+    cudaMemcpy(pixels, device_pixels, byteSize, cudaMemcpyDeviceToHost);
     cudaFree(device_pixels); 
     return 0;
 }
@@ -100,18 +100,22 @@ int pgmDrawLine(int* pixels, int numRows, int numCols, char** header, int p1row,
     int *device_pixels;
     int byteSize = numRows * numCols * sizeof(int);
 
-    int* device_pixels = nullptr;
-    dieCuda(cudaMalloc((void**)&device_pixels, bytes), "cudaMalloc device_pixels");
-    dieCuda(cudaMemcpy(device_pixels, pixels, bytes, cudaMemcpyHostToDevice), "cudaMemcpy device_pixels");
-    int block = 256;
-    int grid = (total + block - 1) / block;
-    lineKernel<<<grid, block>>>(device_pixels, numRows, numCols, p1row, p1col, p2row, p2col);
-    dieCuda(cudaGetLastError(), "launch lineKernel");
-    dieCuda(cudaDeviceSynchronize(), "sync lineKernel");
+    // Allocate device memory
+    cudaMalloc((void**)&device_pixels, byteSize);
+    cudaMemcpy(device_pixels, pixels, byteSize, cudaMemcpyHostToDevice);
+    
+    //Calculate Parameters
+    dim3 block(16, 16); 
+    dim3 grid((numCols + block.x - 1) / block.x, (numRows + block.y - 1) / block.y); 
 
-    dieCuda(cudaMemcpy(pixels, device_pixels, bytes, cudaMemcpyDeviceToHost), "cudaMemcpy pixels");
-    cudaFree(device_pixels);
+    //Launch Kernel
+    pgmDrawLineKernel<<<grid, block>>>(device_pixels, numRows, numCols, p1row, p1col, p2row, p2col); 
+    cudaDeviceSynchronize();
 
+    //Copy result back to host and free device memory
+    cudaMemcpy(pixels, device_pixels, byteSize, cudaMemcpyDeviceToHost);
+    cudaFree(device_pixels); 
+    
     return 0;
 }
 
