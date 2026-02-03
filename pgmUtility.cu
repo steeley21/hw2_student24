@@ -54,6 +54,7 @@ int pgmDrawCircle( int *pixels, int numRows, int numCols, int centerRow, int cen
     // Allocate device memory
     cudaMalloc((void**)&device_pixels, byteSize); 
     cudaMemcpy(device_pixels, pixels, byteSize, cudaMemcpyHostToDevice);
+    
     //Calculate Parameters
     dim3 block(16, 16); // Define block size
     dim3 grid((numCols + block.x - 1) / block.x, (numRows + block.y - 1) / block.y);
@@ -92,36 +93,33 @@ int pgmDrawEdge(int *pixels, int numRows, int numCols, int edgeWidth, char **hea
 }
 
 /*
-/ pgmDrawLine NEEDS WORK: Everything
+/ pgmDrawLine NEEDS WORK
 */
 int pgmDrawLine(int* pixels, int numRows, int numCols, char** header, int p1row, int p1col, int p2row, int p2col) {
 
-    int total = numRows * numCols;
-    size_t bytes = sizeof(int) * (size_t)total;
+    int *device_pixels;
+    int byteSize = numRows * numCols * sizeof(int);
 
-    int* device_pixels = nullptr;
-    dieCuda(cudaMalloc((void**)&device_pixels, bytes), "cudaMalloc device_pixels");
-    dieCuda(cudaMemcpy(device_pixels, pixels, bytes, cudaMemcpyHostToDevice), "cudaMemcpy device_pixels");
-    int block = 256;
-    int grid = (total + block - 1) / block;
-    lineKernel<<<grid, block>>>(device_pixels, numRows, numCols, p1row, p1col, p2row, p2col);
-    dieCuda(cudaGetLastError(), "launch lineKernel");
-    dieCuda(cudaDeviceSynchronize(), "sync lineKernel");
+    // Allocate device memory
+    cudaMalloc((void**)&device_pixels, byteSize);
+    cudaMemcpy(device_pixels, pixels, byteSize, cudaMemcpyHostToDevice);
 
-    dieCuda(cudaMemcpy(pixels, device_pixels, bytes, cudaMemcpyDeviceToHost), "cudaMemcpy pixels");
-    cudaFree(device_pixels);
+    //Calculate Parameters
+    dim3 block(16, 16); 
+    dim3 grid((numCols + block.x - 1) / block.x, (numRows + block.y - 1) / block.y); 
 
-    int oldMax = parseMaxFromHeader(header);
-    int newMax = computeMaxCPU(pixels, total);
-    if (newMax != oldMax) {
-        writeMaxToHeader(header, newMax);
-        return 1;
-    }
+    //Launch Kernel
+    pgmDrawEdgeKernel<<<grid, block>>>(device_pixels, numRows, numCols, edgeWidth); 
+    cudaDeviceSynchronize();
+
+    //Copy result back to host and free device memory
+    cudaMemcpy(pixels, device_pixels, size, cudaMemcpyDeviceToHost);
+    cudaFree(device_pixels); 
+
     return 0;
 }
 
-int pgmWrite( const char **header, const int *pixels, int numRows, int numCols, FILE *out ) 
-{
+int pgmWrite( const char **header, const int *pixels, int numRows, int numCols, FILE *out )  {
     int i, j;
     
     // write the header
