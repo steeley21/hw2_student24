@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "pgmUtility.h"
+#include "seqPgmUtility.h"
 
 //---------------------------------------------------------------------------
 int ** seqPgmRead( char **header, int *numRows, int *numCols, FILE *in )
@@ -54,12 +54,12 @@ int ** seqPgmRead( char **header, int *numRows, int *numCols, FILE *in )
 //---------------------------------------------------------------------------
 //
 int seqPgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow, int centerCol, int radius, char **header ) {
-
+    return 0;
 }
 
 //---------------------------------------------------------------------------
 int seqPgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **header ) {
-
+    return 0;
 }
 
 //---------------------------------------------------------------------------

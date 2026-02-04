@@ -9,6 +9,7 @@
 #define cscd439pgm_seqPgmUtility_h
 
 #include <math.h>
+#include "pgmProcess.h"
 
 #define rowsInHeader 4      // number of rows in image header
 #define maxSizeHeadRow 200  // maximal number characters in one row in the header

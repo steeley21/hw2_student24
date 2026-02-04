@@ -12,3 +12,9 @@
  *  @return         return distance between p1 and p2
  */
 __device__ float distance( int p1[], int p2[] );
+
+__global__ void drawCircleKernel(int *pixels, int numRows, int numCols, int centerRow, int centerCol, int radius);
+
+__global__ void drawEdgeKernel(int *pixels, int numRows, int numCols, int edgeWidth);
+
+__global__ void drawLineKernel(int *pixels, int numRows, int numCols, int p1row, int p1col, int p2row, int p2col);

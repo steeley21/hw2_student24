@@ -23,7 +23,7 @@ int * pgmRead( char **header, int *numRows, int *numCols, FILE *in ) {
     sscanf( header[rowsInHeader - 2], "%d %d", numCols, numRows );  // in pgm the first number is # of cols
     
     // Now we can intialize the pixel of 1D Array, allocating memory
-    int *pixels = malloc((*numRows) * (*numCols) * sizeof(int));
+    int *pixels = (int*)malloc((*numRows) * (*numCols) * sizeof(int));
     if ( pixels == NULL ) {
         return NULL;
     }
@@ -83,7 +83,7 @@ int pgmDrawEdge(int *pixels, int numRows, int numCols, int edgeWidth, char **hea
     dim3 grid((numCols + block.x - 1) / block.x, (numRows + block.y - 1) / block.y); 
 
     //Launch Kernel
-    pgmDrawEdgeKernel<<<grid, block>>>(device_pixels, numRows, numCols, edgeWidth); 
+    drawEdgeKernel<<<grid, block>>>(device_pixels, numRows, numCols, edgeWidth); 
     cudaDeviceSynchronize();
 
     //Copy result back to host and free device memory
@@ -109,7 +109,7 @@ int pgmDrawLine(int* pixels, int numRows, int numCols, char** header, int p1row,
     dim3 grid((numCols + block.x - 1) / block.x, (numRows + block.y - 1) / block.y); 
 
     //Launch Kernel
-    pgmDrawLineKernel<<<grid, block>>>(device_pixels, numRows, numCols, p1row, p1col, p2row, p2col); 
+    drawLineKernel<<<grid, block>>>(device_pixels, numRows, numCols, p1row, p1col, p2row, p2col); 
     cudaDeviceSynchronize();
 
     //Copy result back to host and free device memory

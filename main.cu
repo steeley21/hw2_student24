@@ -3,6 +3,8 @@
 #include "pgmUtility.h"
 
 #define ERROR_MESSAGE "Usage:\n-e edgeWidth  oldImageFile  newImageFile\n-c circleCenterRow circleCenterCol radius  oldImageFile  newImageFile\n-l p1row p1col p2row p2col oldImageFile newImageFile\n"
+FILE* fileOpen(const char *filename, const char *mode);
+FILE* fileClose(FILE *fp);
 
 int main(int argc, char *argv[]) {
 
@@ -12,12 +14,16 @@ int main(int argc, char *argv[]) {
     }
 
     char *header[rowsInHeader];
+    const char *outputHeader[rowsInHeader];
     int numRows, numCols;
+    char oldImageFile[256] = "";
+    char newImageFile[256] = "";
+    FILE *fileInput;
+    FILE *fileOutput;
+    int *pixels;
 
-
-    char *flag = argv[1];
-    switch (flag[1]) {  // flag[1] is the character after the dash
-        case 'c':
+    switch (argv[1][1]) {
+        case 'c': {
 
             if (argc != 7) {
                 printf("%s", ERROR_MESSAGE);
@@ -27,13 +33,13 @@ int main(int argc, char *argv[]) {
             int circleCenterRow = atoi(argv[2]);
             int circleCenterCol = atoi(argv[3]);
             int radius = atoi(argv[4]);
-            char oldImageFile[256] = argv[5];
-            char newImageFile[256] = argv[6];
+            strcpy(oldImageFile, argv[5]);
+            strcpy(newImageFile, argv[6]);
 
-            fileptr *fileInput = fileOpen(oldImageFile, "r");
-            fileptr *fileOutput = fileOpen(newImageFile, "w");
+            fileInput = fileOpen(oldImageFile, "r");
+            fileOutput = fileOpen(newImageFile, "w");
 
-            int *pixels = pgmRead(argv[argc - 2], header, &numRows, &numCols);
+            pixels = pgmRead(header, &numRows, &numCols, fileInput);
 
             if (pixels == NULL) {
                 printf("Error reading PGM file: %s\n", oldImageFile);
@@ -44,14 +50,14 @@ int main(int argc, char *argv[]) {
             
             pgmDrawCircle(pixels, numRows, numCols, circleCenterRow, circleCenterCol, radius, header);
 
-            pgmWrite(pixels, numRows, numCols, header, fileOutput);
+            pgmWrite(outputHeader, pixels, numRows, numCols, fileOutput);
 
             fileClose(fileInput);
             fileClose(fileOutput);
 
             break;
-
-        case 'e':
+        }
+        case 'e': {
 
             if (argc != 5) {
                 printf("%s", ERROR_MESSAGE);
@@ -59,13 +65,13 @@ int main(int argc, char *argv[]) {
             }
 
             int edgeWidth = atoi(argv[2]);
-            char oldImageFile[256] = argv[3];
-            char newImageFile[256] = argv[4];
+            strcpy(oldImageFile, argv[3]);
+            strcpy(newImageFile, argv[4]);
 
-            fileptr *fileInput = fileOpen(oldImageFile, "r");
-            fileptr *fileOutput = fileOpen(newImageFile, "w");
+            fileInput = fileOpen(oldImageFile, "r");
+            fileOutput = fileOpen(newImageFile, "w");
 
-            int *pixels = pgmRead(argv[argc - 2], header, &numRows, &numCols);
+            pixels = pgmRead(header, &numRows, &numCols, fileInput);
 
             if (pixels == NULL) {
                 printf("Error reading PGM file: %s\n", oldImageFile);
@@ -76,13 +82,13 @@ int main(int argc, char *argv[]) {
 
             pgmDrawEdge(pixels, numRows, numCols, edgeWidth, header);
 
-            pgmWrite(pixels, numRows, numCols, header, fileOutput);
+            pgmWrite(outputHeader, pixels, numRows, numCols, fileOutput);
 
             fileClose(fileInput);
             fileClose(fileOutput);
             break;
-
-        case 'l':
+        }
+        case 'l': {
 
             if (argc != 8) {
                 printf("%s", ERROR_MESSAGE);
@@ -93,13 +99,13 @@ int main(int argc, char *argv[]) {
             int p1col = atoi(argv[3]);
             int p2row = atoi(argv[4]);
             int p2col = atoi(argv[5]);
-            char oldImageFile[256] = argv[6];
-            char newImageFile[256] = argv[7];
+            strcpy(oldImageFile, argv[6]);
+            strcpy(newImageFile, argv[7]);
 
-            fileptr *fileInput = fileOpen(oldImageFile, "r");
-            fileptr *fileOutput = fileOpen(newImageFile, "w");
+            fileInput = fileOpen(oldImageFile, "r");
+            fileOutput = fileOpen(newImageFile, "w");
 
-            int *pixels = pgmRead(argv[argc - 2], header, &numRows, &numCols);
+            pixels = pgmRead(header, &numRows, &numCols, fileInput);
 
             if (pixels == NULL) {
                 printf("Error reading PGM file: %s\n", oldImageFile);
@@ -110,22 +116,23 @@ int main(int argc, char *argv[]) {
 
             pgmDrawLine(pixels, numRows, numCols, header, p1row, p1col, p2row, p2col);
 
-            pgmWrite(pixels, numRows, numCols, header, fileOutput);
+            pgmWrite(outputHeader, pixels, numRows, numCols, fileOutput);
 
             fileClose(fileInput);
             fileClose(fileOutput);
             break;
 
-        default:
+        }
+        default: {
             printf(ERROR_MESSAGE);
             return -1;
         }
-
-        return 0;
     }
+    return 0;
+}
 
-*fileptr fileOpen(const char *filename, const char *mode) {
-    fileptr fp = fopen(filename, mode);
+FILE* fileOpen(const char *filename, const char *mode) {
+    FILE *fp = fopen(filename, mode);
     if (fp == NULL) {
         printf("Error opening file: %s\n", filename);
         exit(EXIT_FAILURE);
@@ -133,7 +140,7 @@ int main(int argc, char *argv[]) {
     return fp;
 }
 
-*fileptr fileClose(fileptr fp) {
+FILE* fileClose(FILE *fp) {
     if (fclose(fp) != 0) {
         printf("Error closing file\n");
         exit(EXIT_FAILURE);

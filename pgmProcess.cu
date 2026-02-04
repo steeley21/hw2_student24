@@ -23,7 +23,7 @@ __global__ void drawCircleKernel(int *pixels, int numRows, int numCols, int cent
         int center[2] = {centerRow, centerCol};
         float dist = distance(p, center);
         if (fabs(dist - radius) <= 0.5) {
-            pixels[row][col] = 255; // Set pixel to white if it's on the circle
+            pixels[row * numCols + col] = 0;
         }
     }
 
@@ -36,7 +36,7 @@ __global__ void drawEdgeKernel(int *pixels, int numRows, int numCols, int edgeWi
 
     if (row < numRows && col < numCols) {
         if (row < edgeWidth || row >= numRows - edgeWidth || col < edgeWidth || col >= numCols - edgeWidth) {
-            pixels[row][col] = 255; // Set pixel to white if it's within the edge width
+            pixels[row * numCols + col] = 255; // Set pixel to white if it's within the edge width
         }
     }
 
@@ -56,7 +56,7 @@ __global__ void drawLineKernel(int *pixels, int numRows, int numCols, int p1row,
         // Calculate distance from point to line
         float dist = fabs(A * row + B * col + C) / sqrtf(A * A + B * B);
         if (dist <= 0.5) {
-            pixels[row][col] = 255; // Set pixel to white if it's on the line
+            pixels[row * numCols + col] = 255; // Set pixel to white if it's on the line
         }
     }
 
