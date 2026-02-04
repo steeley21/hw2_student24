@@ -8,6 +8,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+
 
 #include "seqPgmUtility.h"
 
@@ -32,15 +34,23 @@ int ** seqPgmRead( char **header, int *numRows, int *numCols, FILE *in )
     sscanf( header[rowsInHeader - 2], "%d %d", numCols, numRows );  // in pgm the first number is # of cols
     
     // Now we can intialize the pixel of 2D array, allocating memory
-    int **pixels = ( int ** ) malloc( ( *numRows ) * sizeof( int * ) );
-    for( i = 0; i < *numRows; i ++)
-    {
-        pixels[i] = ( int * ) malloc( ( *numCols ) * sizeof( int ) );
-        if ( pixels[i] == NULL )
-        {
+    int **pixels = malloc((*numRows) * sizeof(int*));
+    if (pixels == NULL) {
+        return NULL;
+    }
+
+    for (i = 0; i < *numRows; i++) {
+        pixels[i] = malloc((*numCols) * sizeof(int));
+        if (pixels[i] == NULL) {
+            // clean up already allocated rows
+            for (j = 0; j < i; j++) {
+                free(pixels[j]);
+            }
+            free(pixels);
             return NULL;
         }
     }
+
     
     // read in all pixels into the pixels array.
     for( i = 0; i < *numRows; i ++ )

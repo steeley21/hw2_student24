@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h> 
 #include "pgmUtility.h"
 
 #define ERROR_MESSAGE "Usage:\n-e edgeWidth  oldImageFile  newImageFile\n-c circleCenterRow circleCenterCol radius  oldImageFile  newImageFile\n-l p1row p1col p2row p2col oldImageFile newImageFile\n"
@@ -7,6 +8,7 @@ FILE* fileOpen(const char *filename, const char *mode);
 FILE* fileClose(FILE *fp);
 
 int main(int argc, char *argv[]) {
+    int status = 0;
 
     if (argc < 2) {
         printf("Usage: %s -c|-e|-l [additional parameters]\n", argv[0]);
@@ -14,20 +16,26 @@ int main(int argc, char *argv[]) {
     }
 
     char *header[rowsInHeader];
-    const char *outputHeader[rowsInHeader];
+    for (int i = 0; i < rowsInHeader; i++) {
+        header[i] = (char*)malloc(maxSizeHeadRow);
+        if (!header[i]) { perror("malloc"); exit(1); }
+    }
     int numRows, numCols;
     char oldImageFile[256] = "";
     char newImageFile[256] = "";
-    FILE *fileInput;
-    FILE *fileOutput;
-    int *pixels;
+    FILE *fileInput = NULL;
+    FILE *fileOutput = NULL;
+
+    int *pixels = NULL;
+
 
     switch (argv[1][1]) {
         case 'c': {
 
             if (argc != 7) {
                 printf("%s", ERROR_MESSAGE);
-                return -1;
+                status = -1;
+                break;
             }
 
             int circleCenterRow = atoi(argv[2]);
@@ -45,12 +53,13 @@ int main(int argc, char *argv[]) {
                 printf("Error reading PGM file: %s\n", oldImageFile);
                 fileClose(fileInput);
                 fileClose(fileOutput);
-                return -1;
+                status = -1;
+                break;
             }
             
             pgmDrawCircle(pixels, numRows, numCols, circleCenterRow, circleCenterCol, radius, header);
 
-            pgmWrite(outputHeader, pixels, numRows, numCols, fileOutput);
+            pgmWrite((const char**)header, pixels, numRows, numCols, fileOutput);
 
             fileClose(fileInput);
             fileClose(fileOutput);
@@ -61,7 +70,8 @@ int main(int argc, char *argv[]) {
 
             if (argc != 5) {
                 printf("%s", ERROR_MESSAGE);
-                return -1;
+                status = -1;
+                break;
             }
 
             int edgeWidth = atoi(argv[2]);
@@ -77,12 +87,13 @@ int main(int argc, char *argv[]) {
                 printf("Error reading PGM file: %s\n", oldImageFile);
                 fileClose(fileInput);
                 fileClose(fileOutput);
-                return -1;
+                status = -1;
+                break;
             }
 
             pgmDrawEdge(pixels, numRows, numCols, edgeWidth, header);
 
-            pgmWrite(outputHeader, pixels, numRows, numCols, fileOutput);
+            pgmWrite((const char**)header, pixels, numRows, numCols, fileOutput);
 
             fileClose(fileInput);
             fileClose(fileOutput);
@@ -92,7 +103,8 @@ int main(int argc, char *argv[]) {
 
             if (argc != 8) {
                 printf("%s", ERROR_MESSAGE);
-                return -1;
+                status = -1;
+                break;
             }
 
             int p1row = atoi(argv[2]);
@@ -111,12 +123,13 @@ int main(int argc, char *argv[]) {
                 printf("Error reading PGM file: %s\n", oldImageFile);
                 fileClose(fileInput);
                 fileClose(fileOutput);
-                return -1;
+                status = -1;
+                break;
             }
 
             pgmDrawLine(pixels, numRows, numCols, header, p1row, p1col, p2row, p2col);
 
-            pgmWrite(outputHeader, pixels, numRows, numCols, fileOutput);
+            pgmWrite((const char**)header, pixels, numRows, numCols, fileOutput);
 
             fileClose(fileInput);
             fileClose(fileOutput);
@@ -125,10 +138,20 @@ int main(int argc, char *argv[]) {
         }
         default: {
             printf(ERROR_MESSAGE);
-            return -1;
+            status = -1;
+            break;
         }
     }
-    return 0;
+
+    // Free pixels if allocated
+    free(pixels);
+
+    // Free header buffers
+    for (int i = 0; i < rowsInHeader; i++) {
+        free(header[i]);
+    }
+
+    return status;
 }
 
 FILE* fileOpen(const char *filename, const char *mode) {
