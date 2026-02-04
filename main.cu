@@ -157,7 +157,7 @@ int main(int argc, char *argv[]) {
 FILE* fileOpen(const char *filename, const char *mode) {
     FILE *fp = fopen(filename, mode);
     if (fp == NULL) {
-        printf("Error opening file: %s\n", filename);
+        printf("%s", ERROR_MESSAGE);
         exit(EXIT_FAILURE);
     }
     return fp;
@@ -165,7 +165,7 @@ FILE* fileOpen(const char *filename, const char *mode) {
 
 FILE* fileClose(FILE *fp) {
     if (fclose(fp) != 0) {
-        printf("Error closing file\n");
+        printf("%s", ERROR_MESSAGE);
         exit(EXIT_FAILURE);
     }
     return NULL;

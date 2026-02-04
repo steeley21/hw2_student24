@@ -1,4 +1,4 @@
-hw2: main.o pgmProcess.o pgmUtility.o
+myPaint: main.o pgmProcess.o pgmUtility.o
 	nvcc -arch=sm_86 -o hw2 main.o pgmProcess.o pgmUtility.o -I.
 
 main.o: main.cu
