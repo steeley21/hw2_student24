@@ -1,5 +1,5 @@
-myPaint: main.o pgmProcess.o pgmUtility.o
-	nvcc -arch=sm_86 -o hw2 main.o pgmProcess.o pgmUtility.o -I.
+myPaint: main.o pgmProcess.o pgmUtility.o timing.o
+	nvcc -arch=sm_86 -o hw2 main.o timing.o pgmProcess.o pgmUtility.o -I.
 
 main.o: main.cu
 	nvcc -arch=sm_86 -c main.cu
@@ -9,6 +9,9 @@ pgmProcess.o: pgmProcess.cu pgmProcess.h
 
 pgmUtility.o: pgmUtility.cu pgmUtility.h
 	nvcc -arch=sm_86 -c pgmUtility.cu
+
+timing.o: timing.c timing.h
+	gcc -c -o timing.o timing.c
 
 #seqPgmUtility.o: seqPgmUtility.c seqPgmUtility.h
 #	gcc -c -o seqPgmUtility.o seqPgmUtility.c

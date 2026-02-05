@@ -27,6 +27,8 @@ int main(int argc, char *argv[]) {
     FILE *fileOutput = NULL;
 
     int *pixels = NULL;
+    double now, then;
+    double scost, pcost;
 
 
     switch (argv[1][1]) {
@@ -43,6 +45,9 @@ int main(int argc, char *argv[]) {
             int radius = atoi(argv[4]);
             strcpy(oldImageFile, argv[5]);
             strcpy(newImageFile, argv[6]);
+
+            //Time Parallel Solution
+            then = currentTime();
 
             fileInput = fileOpen(oldImageFile, "r");
             fileOutput = fileOpen(newImageFile, "w");
@@ -64,6 +69,15 @@ int main(int argc, char *argv[]) {
             fileClose(fileInput);
             fileClose(fileOutput);
 
+            //End Time
+            now = currentTime();
+            pcost = now - then;
+
+            printf("%%%%%% Parallel code execution time for circle drawing is %lf\n", pcost);
+
+            printf("%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %lf\n", scost / pcost);
+            printf("%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %lf\n", scost / pcost / 4);
+
             break;
         }
         case 'e': {
@@ -77,6 +91,9 @@ int main(int argc, char *argv[]) {
             int edgeWidth = atoi(argv[2]);
             strcpy(oldImageFile, argv[3]);
             strcpy(newImageFile, argv[4]);
+
+            //Time Parallel Solution
+            then = currentTime();
 
             fileInput = fileOpen(oldImageFile, "r");
             fileOutput = fileOpen(newImageFile, "w");
@@ -97,6 +114,16 @@ int main(int argc, char *argv[]) {
 
             fileClose(fileInput);
             fileClose(fileOutput);
+
+            //End Time
+            now = currentTime();
+            pcost = now - then;
+
+            printf("%%%%%% Parallel code execution time for edge drawing is %lf\n", pcost);
+
+            printf("%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %lf\n", scost / pcost);
+            printf("%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %lf\n", scost / pcost / 4);
+
             break;
         }
         case 'l': {
@@ -113,6 +140,9 @@ int main(int argc, char *argv[]) {
             int p2col = atoi(argv[5]);
             strcpy(oldImageFile, argv[6]);
             strcpy(newImageFile, argv[7]);
+
+            //Time Parallel Solution
+            then = currentTime();
 
             fileInput = fileOpen(oldImageFile, "r");
             fileOutput = fileOpen(newImageFile, "w");
@@ -133,6 +163,16 @@ int main(int argc, char *argv[]) {
 
             fileClose(fileInput);
             fileClose(fileOutput);
+
+            //End Time
+            now = currentTime();
+            pcost = now - then;
+
+            printf("%%%%%% Parallel code execution time for line drawing is %lf\n", pcost);
+
+            printf("%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %lf\n", scost / pcost);
+            printf("%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %lf\n", scost / pcost / 4);
+
             break;
 
         }
