@@ -63,6 +63,7 @@ int ** seqPgmRead( char **header, int *numRows, int *numCols, FILE *in )
 
 //---------------------------------------------------------------------------
 //
+//
 int seqPgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow, int centerCol, int radius, char **header ) {
     // 
     (void)header;
@@ -71,9 +72,9 @@ int seqPgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow, int
     for(int r = 0; r < numRows; r++) {
         for(int c = 0; c < numCols; c++) {
             // Calculate distance from center
-            double dr = (double)(r - centerRow);
-            double dc = (double)(c - centerCol);
-            double distance = sqrt(dr * dr + dc * dc);
+            int p1[2] = { r, c };
+            int p2[2] = { centerRow, centerCol };
+            double distance = seqDistance(p1, p2);
             // If within the circle, set pixel to zero
             if (distance <= radius)
  {
@@ -191,5 +192,4 @@ double seqDistance( int p1[], int p2[] )
 {
     return sqrt( pow( p1[0] - p2[0], 2 ) + pow( p1[1] - p2[1], 2 ) );
 }
-
 
