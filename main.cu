@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h> 
 #include "pgmUtility.h"
+#include "seqPgmUtility.h"
+#include "timing.h"
 
 #define ERROR_MESSAGE "Usage:\n-e edgeWidth  oldImageFile  newImageFile\n-c circleCenterRow circleCenterCol radius  oldImageFile  newImageFile\n-l p1row p1col p2row p2col oldImageFile newImageFile\n"
 FILE* fileOpen(const char *filename, const char *mode);
@@ -27,6 +29,7 @@ int main(int argc, char *argv[]) {
     FILE *fileOutput = NULL;
 
     int *pixels = NULL;
+    int **sequentialPixels = NULL;
     double now, then;
     double scost, pcost;
 
@@ -45,6 +48,34 @@ int main(int argc, char *argv[]) {
             int radius = atoi(argv[4]);
             strcpy(oldImageFile, argv[5]);
             strcpy(newImageFile, argv[6]);
+
+            //Time Serial Solution
+            then = currentTime();
+            fileInput = fileOpen(oldImageFile, "r");
+            fileOutput = fileOpen(newImageFile, "w");
+
+            sequentialPixels = seqPgmRead(header, &numRows, &numCols, fileInput);
+            if (sequentialPixels == NULL) {
+                printf("Error reading PGM file: %s\n", oldImageFile);
+                fileClose(fileInput);
+                fileClose(fileOutput);
+                status = -1;
+                break;
+            }
+
+            seqPgmDrawCircle(sequentialPixels, numRows, numCols, circleCenterRow, circleCenterCol, radius, header);
+            seqPgmWrite((const char**)header, sequentialPixels, numRows, numCols, fileOutput);
+
+            fileClose(fileInput);
+            fileClose(fileOutput);
+
+            //End Time
+            now = currentTime();
+            scost = now - then;
+
+            printf("Serial code execution time for circle drawing in second is %lf\n", scost);
+
+
 
             //Time Parallel Solution
             then = currentTime();
@@ -91,6 +122,34 @@ int main(int argc, char *argv[]) {
             int edgeWidth = atoi(argv[2]);
             strcpy(oldImageFile, argv[3]);
             strcpy(newImageFile, argv[4]);
+
+            //Time Serial Solution
+            then = currentTime();
+            fileInput = fileOpen(oldImageFile, "r");
+            fileOutput = fileOpen(newImageFile, "w");
+
+            sequentialPixels = seqPgmRead(header, &numRows, &numCols, fileInput);
+            if (sequentialPixels == NULL) {
+                printf("Error reading PGM file: %s\n", oldImageFile);
+                fileClose(fileInput);
+                fileClose(fileOutput);
+                status = -1;
+                break;
+            }
+
+            seqPgmDrawEdge(sequentialPixels, numRows, numCols, circleCenterRow, circleCenterCol, radius, header);
+            seqPgmWrite((const char**)header, sequentialPixels, numRows, numCols, fileOutput);
+
+            fileClose(fileInput);
+            fileClose(fileOutput);
+
+            //End Time
+            now = currentTime();
+            scost = now - then;
+
+            printf("Serial code execution time for edge drawing in second is %lf\n", scost);
+
+
 
             //Time Parallel Solution
             then = currentTime();
@@ -140,6 +199,34 @@ int main(int argc, char *argv[]) {
             int p2col = atoi(argv[5]);
             strcpy(oldImageFile, argv[6]);
             strcpy(newImageFile, argv[7]);
+
+            //Time Serial Solution
+            then = currentTime();
+            fileInput = fileOpen(oldImageFile, "r");
+            fileOutput = fileOpen(newImageFile, "w");
+
+            sequentialPixels = seqPgmRead(header, &numRows, &numCols, fileInput);
+            if (sequentialPixels == NULL) {
+                printf("Error reading PGM file: %s\n", oldImageFile);
+                fileClose(fileInput);
+                fileClose(fileOutput);
+                status = -1;
+                break;
+            }
+
+            seqPgmDrawEdge(sequentialPixels, numRows, numCols, circleCenterRow, circleCenterCol, radius, header);
+            seqPgmWrite((const char**)header, sequentialPixels, numRows, numCols, fileOutput);
+
+            fileClose(fileInput);
+            fileClose(fileOutput);
+
+            //End Time
+            now = currentTime();
+            scost = now - then;
+
+            printf("Serial code execution time for edge drawing in second is %lf\n", scost);
+
+
 
             //Time Parallel Solution
             then = currentTime();
