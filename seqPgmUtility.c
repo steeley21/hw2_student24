@@ -64,21 +64,57 @@ int ** seqPgmRead( char **header, int *numRows, int *numCols, FILE *in )
 //---------------------------------------------------------------------------
 //
 int seqPgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow, int centerCol, int radius, char **header ) {
+    // 
+    (void)header;
+
+    // Iterate over each pixel
+    for(int r = 0; r < numRows; r++) {
+        for(int c = 0; c < numCols; c++) {
+            // Calculate distance from center
+            double dr = (double)(r - centerRow);
+            double dc = (double)(c - centerCol);
+            double distance = sqrt(dr * dr + dc * dc);
+            // If within the circle, set pixel to zero
+            if (distance <= radius)
+ {
+                pixels[r][c] = 0;
+                //Black pixel
+            }
+        }
+    }
     return 0;
 }
 
 //---------------------------------------------------------------------------
 int seqPgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **header ) {
+    (void)header;
+
+    // Clamp negative edgeWidth to zero
+    if(edgeWidth <= 0) edgeWidth = 0;
+
+    for(int r = 0; r < numRows; r++) {
+        for(int c = 0; c < numCols; c++) {
+            // Check if pixel is within edgeWidth of any border
+            if(r < edgeWidth || r >= numRows - edgeWidth ||
+               c < edgeWidth || c >= numCols - edgeWidth) {
+                pixels[r][c] = 0;
+                //Black pixel 
+            }
+        }
+    }
+
     return 0;
 }
 
 //---------------------------------------------------------------------------
 static double pointToSegmentDistance( double px, double py, double ax, double ay, double bx, double by) {
+    // Vector AB
     double abx = bx - ax;
     double aby = by - ay;
+    // Vector AP
     double apx = px - ax;
     double apy = py - ay;
-
+    // Length squared of AB
     double abLen2 = abx * abx + aby * aby;
     if(abLen2 == 0.0) {
         // A and B are the same point
@@ -87,12 +123,15 @@ static double pointToSegmentDistance( double px, double py, double ax, double ay
         return sqrt(dx * dx + dy * dy);
     }
 
+    // Project point AP onto line AB
     double t = (apx * abx + apy * aby) / abLen2;
     if(t < 0.0) t = 0.0;
     else if(t > 1.0) t = 1.0;
 
+    // Find the closest point C on segment AB
     double cx = ax + t * abx;
     double cy = ay + t * aby;
+    // Distance from P to C
     double dx = px - cx;
     double dy = py - cy;
     return sqrt(dx * dx + dy * dy);
@@ -101,18 +140,22 @@ static double pointToSegmentDistance( double px, double py, double ax, double ay
 int seqPgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1row, int p1col, int p2row, int p2col ) {
     (void)header;
 
+    //Converts to Cartesian coordinates
     double ax = (double)p1col, ay = (double)p1row;
     double bx = (double)p2col, by = (double)p2row;
 
+    // Iterate over each pixel
     for(int r = 0; r < numRows; r++) {
         for(int c =0; c < numCols; c++) {
             double px = (double)c;
             double py = (double)r;
 
+            // Calculate distance from pixel center to line segment
             double d = pointToSegmentDistance(px, py, ax, ay, bx, by);
 
             if(d <= 0.5) {
                 pixels[r][c] = 0;
+                //Black pixel
             }
         }
     }
