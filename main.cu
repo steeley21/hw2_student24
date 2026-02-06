@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
     double now, then;
     double scost, pcost;
 
-    File *fptr = Null;
+    FILE *fptr = NULL;
     fptr = fopen("Times.txt", "w");
 
 
