@@ -315,6 +315,8 @@ int main(int argc, char *argv[]) {
 
     // Free pixels if allocated
     free(pixels);
+    free(sequentialPixels);
+    fclose(fptr);
 
     // Free header buffers
     for (int i = 0; i < rowsInHeader; i++) {
