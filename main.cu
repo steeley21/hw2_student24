@@ -36,6 +36,9 @@ int main(int argc, char *argv[]) {
     double now, then;
     double scost, pcost;
 
+    File *fptr = Null;
+    fptr = fopen("Times.txt", "w");
+
 
     switch (argv[1][1]) {
         case 'c': {
@@ -76,7 +79,7 @@ int main(int argc, char *argv[]) {
             now = currentTime();
             scost = now - then;
 
-            printf("Serial code execution time for circle drawing in second is %lf\n", scost);
+            //printf("Serial code execution time for circle drawing in second is %lf\n", scost);
 
 
 
@@ -106,11 +109,24 @@ int main(int argc, char *argv[]) {
             //End Time
             now = currentTime();
             pcost = now - then;
+            
+            if (fptr == NULL) {
+                printf("The file is not opened.");
+            } else {
+                printf("The file is now opened.\n");
+                
+                fprintf(fptr,"Serial code execution time for circle drawing in second is %lf\n", scost);
+                fprintf(fptr,"%%%%%% Parallel code execution time for circle drawing is %lf\n", pcost);
+                fprintf(fptr,"%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %lf\n", scost / pcost);
+                fprintf(fptr,"%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %lf\n", scost / pcost / 4);
+            }
 
+            /*
             printf("%%%%%% Parallel code execution time for circle drawing is %lf\n", pcost);
 
             printf("%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %lf\n", scost / pcost);
             printf("%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %lf\n", scost / pcost / 4);
+            */
 
             break;
         }
@@ -150,7 +166,7 @@ int main(int argc, char *argv[]) {
             now = currentTime();
             scost = now - then;
 
-            printf("Serial code execution time for edge drawing in second is %lf\n", scost);
+            //printf("Serial code execution time for edge drawing in second is %lf\n", scost);
 
 
 
@@ -181,11 +197,22 @@ int main(int argc, char *argv[]) {
             now = currentTime();
             pcost = now - then;
 
-            printf("%%%%%% Parallel code execution time for edge drawing is %lf\n", pcost);
+            if (fptr == NULL) {
+                printf("The file is not opened.");
+            } else {
+                printf("The file is now opened.\n");
+                
+                fprintf(fptr,"Serial code execution time for edge drawing in second is %lf\n", scost);
+                fprintf(fptr,"%%%%%% Parallel code execution time for edge drawing is %lf\n", pcost);
+                fprintf(fptr,"%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %lf\n", scost / pcost);
+                fprintf(fptr,"%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %lf\n", scost / pcost / 4);
+            }
 
+            /*
+            printf("%%%%%% Parallel code execution time for edge drawing is %lf\n", pcost);
             printf("%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %lf\n", scost / pcost);
             printf("%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %lf\n", scost / pcost / 4);
-
+            */
             break;
         }
         case 'l': {
@@ -227,7 +254,7 @@ int main(int argc, char *argv[]) {
             now = currentTime();
             scost = now - then;
 
-            printf("Serial code execution time for line drawing in second is %lf\n", scost);
+            //printf("Serial code execution time for line drawing in second is %lf\n", scost);
 
 
 
@@ -258,10 +285,23 @@ int main(int argc, char *argv[]) {
             now = currentTime();
             pcost = now - then;
 
+            if (fptr == NULL) {
+                printf("The file is not opened.");
+            } else {
+                printf("The file is now opened.\n");
+                
+                fprintf(fptr,"Serial code execution time for line drawing in second is %lf\n", scost);
+                fprintf(fptr,"%%%%%% Parallel code execution time for line drawing is %lf\n", pcost);
+                fprintf(fptr,"%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %lf\n", scost / pcost);
+                fprintf(fptr,"%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %lf\n", scost / pcost / 4);
+            }
+            
+            /*
             printf("%%%%%% Parallel code execution time for line drawing is %lf\n", pcost);
 
             printf("%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %lf\n", scost / pcost);
             printf("%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %lf\n", scost / pcost / 4);
+            */
 
             break;
 
