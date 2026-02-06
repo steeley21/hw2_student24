@@ -28,6 +28,11 @@ int main(int argc, char *argv[]) {
     FILE *fileInput = NULL;
     FILE *fileOutput = NULL;
 
+    //pointer to times file
+    FILE *fptr = NULL;
+
+    fptr = fopen("Times.txt", "w");
+
     int *pixels = NULL;
     int **sequentialPixels = NULL;
     double now, then;
@@ -73,7 +78,7 @@ int main(int argc, char *argv[]) {
             now = currentTime();
             scost = now - then;
 
-            printf("Serial code execution time for circle drawing in second is %lf\n", scost);
+           // printf("Serial code execution time for circle drawing in second is %lf\n", scost);
 
 
 
@@ -104,11 +109,17 @@ int main(int argc, char *argv[]) {
             now = currentTime();
             pcost = now - then;
 
-            printf("%%%%%% Parallel code execution time for circle drawing is %lf\n", pcost);
+            if (fptr == NULL) 
+                printf("The file is not opened.");
+            else{
+                printf("The file is now opened.\n");
+                
+                fprintf(fptr,"Serial code execution time for circle drawing in second is %lf\n", scost);
+                fprintf(fptr,"%%%%%% Parallel code execution time for circle drawing is %lf\n", pcost);
 
-            printf("%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %lf\n", scost / pcost);
-            printf("%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %lf\n", scost / pcost / 4);
-
+                fprintf(fptr,"%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %lf\n", scost / pcost);
+                fprintf(fptr,"%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %lf\n", scost / pcost / 4);
+            }
             break;
         }
         case 'e': {
@@ -137,7 +148,7 @@ int main(int argc, char *argv[]) {
                 break;
             }
 
-            seqPgmDrawEdge(sequentialPixels, numRows, numCols, circleCenterRow, circleCenterCol, radius, header);
+            seqPgmDrawEdge(sequentialPixels, numRows, numCols, edgeWidth, header);
             seqPgmWrite((const char**)header, sequentialPixels, numRows, numCols, fileOutput);
 
             fileClose(fileInput);
@@ -178,10 +189,17 @@ int main(int argc, char *argv[]) {
             now = currentTime();
             pcost = now - then;
 
-            printf("%%%%%% Parallel code execution time for edge drawing is %lf\n", pcost);
+            if (fptr == NULL) 
+                printf("The file is not opened.");
+            else{
+                printf("The file is now opened.\n");
+                
+                fprintf(fptr,"Serial code execution time for circle drawing in second is %lf\n", scost);
+                fprintf(fptr,"%%%%%% Parallel code execution time for circle drawing is %lf\n", pcost);
 
-            printf("%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %lf\n", scost / pcost);
-            printf("%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %lf\n", scost / pcost / 4);
+                fprintf(fptr,"%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %lf\n", scost / pcost);
+                fprintf(fptr,"%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %lf\n", scost / pcost / 4);
+            }
 
             break;
         }
@@ -214,7 +232,8 @@ int main(int argc, char *argv[]) {
                 break;
             }
 
-            seqPgmDrawEdge(sequentialPixels, numRows, numCols, circleCenterRow, circleCenterCol, radius, header);
+
+            seqPgmDrawLine(sequentialPixels, numRows, numCols, header, p1row, p1col, p2row, p2col);
             seqPgmWrite((const char**)header, sequentialPixels, numRows, numCols, fileOutput);
 
             fileClose(fileInput);
@@ -255,11 +274,16 @@ int main(int argc, char *argv[]) {
             now = currentTime();
             pcost = now - then;
 
-            printf("%%%%%% Parallel code execution time for line drawing is %lf\n", pcost);
+           if (fptr == NULL) 
+                printf("The file is not opened.");
+            else{
+                
+                fprintf(fptr,"Serial code execution time for circle drawing in second is %lf\n", scost);
+                fprintf(fptr,"%%%%%% Parallel code execution time for circle drawing is %lf\n", pcost);
 
-            printf("%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %lf\n", scost / pcost);
-            printf("%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %lf\n", scost / pcost / 4);
-
+                fprintf(fptr,"%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %lf\n", scost / pcost);
+                fprintf(fptr,"%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %lf\n", scost / pcost / 4);
+                }
             break;
 
         }
