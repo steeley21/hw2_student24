@@ -28,7 +28,7 @@ int seqPgmDrawEdge(int **pixels, int numRows, int numCols,
 int seqPgmDrawLine(int **pixels, int numRows, int numCols, char **header,
                    int p1row, int p1col, int p2row, int p2col);
 
-int seqPgmWrite(const char **header, const int **pixels,
+int seqPgmWrite(char **header, int **pixels,
                 int numRows, int numCols, FILE *out);
 
 #endif

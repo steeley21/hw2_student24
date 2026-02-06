@@ -11,10 +11,10 @@ pgmUtility.o: pgmUtility.cu pgmUtility.h
 	nvcc -arch=sm_86 -c pgmUtility.cu
 
 timing.o: timing.c timing.h
-	gcc -c -o timing.o timing.c
+	gcc -c -x c timing.c -l.
 
 seqPgmUtility.o: seqPgmUtility.c seqPgmUtility.h
-	gcc -c -o seqPgmUtility.o seqPgmUtility.c
+	gcc -c -x c seqPgmUtility.c -l.
 
 clean:
 	rm -r *.o hw2

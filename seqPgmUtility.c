@@ -164,7 +164,7 @@ int seqPgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p
 }
 
 //----------------------------------------------------------------------------
-int seqPgmWrite( const char **header, const int **pixels, int numRows, int numCols, FILE *out ) {
+int seqPgmWrite( char **header, int **pixels, int numRows, int numCols, FILE *out ) {
     int i, j;
     
     // write the header

@@ -2,8 +2,11 @@
 #include <stdlib.h>
 #include <string.h> 
 #include "pgmUtility.h"
-#include "seqPgmUtility.h"
+
+extern "C" {
 #include "timing.h"
+#include "seqPgmUtility.h"
+}
 
 #define ERROR_MESSAGE "Usage:\n-e edgeWidth  oldImageFile  newImageFile\n-c circleCenterRow circleCenterCol radius  oldImageFile  newImageFile\n-l p1row p1col p2row p2col oldImageFile newImageFile\n"
 FILE* fileOpen(const char *filename, const char *mode);
@@ -64,7 +67,7 @@ int main(int argc, char *argv[]) {
             }
 
             seqPgmDrawCircle(sequentialPixels, numRows, numCols, circleCenterRow, circleCenterCol, radius, header);
-            seqPgmWrite((const char**)header, sequentialPixels, numRows, numCols, fileOutput);
+            seqPgmWrite(header, sequentialPixels, numRows, numCols, fileOutput);
 
             fileClose(fileInput);
             fileClose(fileOutput);
@@ -138,7 +141,7 @@ int main(int argc, char *argv[]) {
             }
 
             seqPgmDrawEdge(sequentialPixels, numRows, numCols, edgeWidth, header);
-            seqPgmWrite((const char**)header, sequentialPixels, numRows, numCols, fileOutput);
+            seqPgmWrite(header, sequentialPixels, numRows, numCols, fileOutput);
 
             fileClose(fileInput);
             fileClose(fileOutput);
@@ -215,7 +218,7 @@ int main(int argc, char *argv[]) {
             }
 
             seqPgmDrawLine(sequentialPixels, numRows, numCols, header, p1row, p1col, p2row, p2col);
-            seqPgmWrite((const char**)header, sequentialPixels, numRows, numCols, fileOutput);
+            seqPgmWrite(header, sequentialPixels, numRows, numCols, fileOutput);
 
             fileClose(fileInput);
             fileClose(fileOutput);
