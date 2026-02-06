@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     int status = 0;
 
     if (argc < 2) {
-        printf("Usage: %s -c|-e|-l [additional parameters]\n", argv[0]);
+        printf("%s", ERROR_MESSAGE);
         return -1;
     }
 

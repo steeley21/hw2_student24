@@ -54,7 +54,7 @@ __global__ void drawLineKernel(int *pixels, int numRows, int numCols, int p1row,
         float C = (float)(p2col * p1row - p1col * p2row);
 
         // Calculate distance from point to line
-        float dist = fabs(A * row + B * col + C) / sqrtf(A * A + B * B);
+        float dist = fabs(A * col + B * row + C) / sqrtf(A * A + B * B);
         if (dist <= 0.5) {
             float dot = (col - p1col) * (p2col - p1col) + (row - p1row) * (p2row - p1row);
 
