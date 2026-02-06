@@ -15,6 +15,8 @@
 #define rowsInHeader 4      // number of rows in image header
 #define maxSizeHeadRow 200  // maximal number characters in one row in header
 
+double seqDistance(int p1[], int p2[]);
+
 int ** seqPgmRead(char **header, int *numRows, int *numCols, FILE *in);
 
 int seqPgmDrawCircle(int **pixels, int numRows, int numCols,
